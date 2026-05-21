@@ -539,16 +539,16 @@ function checkAnswer() {
   checked = true;
   const s = scenarios[currentIdx];
   const isCorrect =
-    assignments.primary===s.correct.primary &&
-    assignments.secondary===s.correct.secondary &&
-    assignments.tertiary===s.correct.tertiary &&
-    assignments.fpp===s.correct.fpp;
+    assignments.primary === s.correct.primary &&
+    assignments.secondary === s.correct.secondary &&
+    assignments.tertiary === s.correct.tertiary &&
+    assignments.fpp === s.correct.fpp;
   if(isCorrect) score++;
   results.push(isCorrect);
   renderDots(); renderSlots();
-
+  document.getElementById('check-row').classList.add('hidden');
+  document.getElementById('hdr-score').textContent = score;
   const apptNote = s.apptBox.replace(/(Add Note:[^\n]+)/g, '<span class="appt-note">$1</span>');
-
   document.getElementById('result-area').innerHTML = `
     <div class="result ${isCorrect?'correct-result':'wrong-result'}">
       <div class="result-header">
@@ -562,7 +562,7 @@ function checkAnswer() {
       <div class="result-sections">
         <div class="result-section">
           <h4>Correct ICE Tab Order:</h4>
-          <p>Primary = ${getName(s.correct.primary)}${s.correct.secondary?` | Secondary = ${getName(s.correct.secondary)}`:''}${s.correct.tertiary?` | Tertiary = ${getName(s.correct.tertiary)}`:''}${s.correct.fpp?` | FPP = ${getName(s.correct.fpp)}`:''}</p>
+          <p>Primary = ${getName(s.correct.primary)}${s.correct.secondary?' | Secondary = '+getName(s.correct.secondary):''}${s.correct.tertiary?' | Tertiary = '+getName(s.correct.tertiary):''}${s.correct.fpp?' | FPP = '+getName(s.correct.fpp):''}</p>
         </div>
         <div class="result-section">
           <h4>Patient Responsibility:</h4>
@@ -585,9 +585,6 @@ function checkAnswer() {
         </button>
       </div>
     </div>`;
-
-  document.getElementById('check-row').classList.add('hidden');
-  document.getElementById('hdr-score').textContent = score;
 }
 
 function nextScenario() {
@@ -602,7 +599,7 @@ function nextScenario() {
 function showFinished() {
   document.getElementById('game-screen').classList.add('hidden');
   document.getElementById('finished-screen').classList.remove('hidden');
-  const passed = score >= 8;
+  const passed = score === 10;
   const pct = Math.round(score/10*100);
   document.getElementById('finished-icon').className = `finished-icon ${passed?'passed':'failed'}`;
   document.getElementById('finished-icon').innerHTML = passed
@@ -620,7 +617,7 @@ function showFinished() {
   document.getElementById('result-dots').innerHTML = dots;
   document.getElementById('pass-fail-box').innerHTML = passed
     ? `<div class="pass-box"><p>Congratulations! You passed the training.</p><p class="sub">You demonstrated strong understanding of payer order rules and COB guidelines.</p></div>`
-    : `<div class="fail-box"><p>You need 80% or higher to pass.</p><p class="sub">Please review the COB worksheet and retake the training to improve your understanding.</p></div>`;
+    : `<div class="fail-box"><p>You must get all 10 correct to pass.</p><p class="sub">Please review the COB rules and retake the training.</p></div>`;
 }
 </script>
 </body>
