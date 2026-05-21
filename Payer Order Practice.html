@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payer Order Simulator</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8f8f8; color: #1a1a1a; }
+
+/* HEADER */
+.header { background: #F47B20; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+.header h1 { color: white; font-size: 20px; font-weight: 700; }
+.header .score-info { text-align: right; color: white; font-size: 13px; }
+.header .score-info span { font-weight: 700; font-size: 15px; }
+
+/* INTRO */
+.intro { max-width: 720px; margin: 0 auto; padding: 48px 24px; }
+.intro-icon { width: 72px; height: 72px; background: #F47B20; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; }
+.intro-icon svg { width: 36px; height: 36px; fill: white; }
+.intro h1 { font-size: 36px; font-weight: 700; text-align: center; margin-bottom: 8px; color: white; }
+.intro p { text-align: center; color: #ccc; font-size: 16px; margin-bottom: 40px; }
+.how-it-works { background: #2a2a2a; border-radius: 12px; border: 1px solid #444; padding: 32px; margin-bottom: 32px; }
+.how-it-works h2 { text-align: center; font-size: 18px; font-weight: 600; margin-bottom: 28px; color: white; }
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.step { text-align: center; }
+.step-icon { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+.step-icon.orange { background: #fde8d8; }
+.step-icon.orange svg { color: #F47B20; }
+.step-icon.green { background: #dcfce7; }
+.step-icon.green svg { color: #16a34a; }
+.step h3 { font-size: 14px; font-weight: 600; margin-bottom: 6px; color: white; }
+.step p { font-size: 13px; color: #aaa; line-height: 1.5; }
+
+/* MAIN GAME */
+.game { max-width: 900px; margin: 0 auto; padding: 24px; }
+
+/* PROGRESS */
+.progress-card { background: white; border: 1px solid #e5e5e5; border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+.progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13px; font-weight: 500; }
+.progress-bar-bg { height: 6px; background: #e5e5e5; border-radius: 3px; margin-bottom: 14px; }
+.progress-bar-fill { height: 100%; background: #F47B20; border-radius: 3px; transition: width 0.4s ease; }
+.progress-dots { display: flex; justify-content: space-between; }
+.dot { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #e5e5e5; display: flex; align-items: center; justify-content: center; font-size: 11px; transition: all 0.3s; }
+.dot.current { border-color: #F47B20; box-shadow: 0 0 0 4px rgba(244,123,32,0.15); }
+.dot.current-inner { width: 10px; height: 10px; background: #F47B20; border-radius: 50%; }
+.dot.correct { background: #16a34a; border-color: #16a34a; color: white; }
+.dot.wrong { background: #dc2626; border-color: #dc2626; color: white; }
+
+/* SCENARIO CARD */
+.scenario-card { background: white; border: 1px solid #e5e5e5; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+.scenario-card h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.scenario-card p { color: #555; line-height: 1.6; }
+
+/* ICE TABS */
+.ice-tabs { display: flex; border-bottom: 2px solid #e5e5e5; margin-bottom: 20px; overflow-x: auto; }
+.ice-tab { padding: 10px 16px; font-size: 13px; font-weight: 500; cursor: pointer; border-radius: 8px 8px 0 0; border: 1px solid #b0bec5; border-bottom: none; background: #e8edf2; white-space: nowrap; color: #546e7a; position: relative; }
+.ice-tab.active-tab { background: #F47B20; color: white; border: 1px solid #F47B20; border-bottom: none; }
+.ice-tab.active-tab.secondary-tab { background: #F47B20; }
+.ice-tab.active-tab.tertiary-tab { background: #d4610a; }
+.ice-tab.active-tab.fpp-tab { background: #7c3aed; }
+.ice-tab.inactive { opacity: 0.6; cursor: not-allowed; background: #f0f3f5; border: 1px solid #cfd8dc; border-bottom: none; color: #90a4ae; }
+.ice-tab.selected-slot { outline: 3px solid #F47B20; outline-offset: -2px; }
+.tab-assignment { font-size: 10px; color: #F47B20; display: block; margin-top: 2px; font-weight: 600; }
+.ice-tab.active-tab .tab-assignment { color: white; }
+
+/* ASSIGNMENT SLOTS */
+.slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+.slot { background: white; border: 2px solid #e5e5e5; border-radius: 10px; padding: 14px; cursor: pointer; transition: all 0.2s; }
+.slot:hover:not(.checked) { border-color: #aaa; }
+.slot.selected { border-color: #F47B20; box-shadow: 0 0 0 3px rgba(244,123,32,0.15); }
+.slot.correct-slot { border-color: #16a34a; background: #f0fdf4; }
+.slot.wrong-slot { border-color: #dc2626; background: #fef2f2; }
+.slot-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #F47B20; margin-bottom: 8px; }
+.slot-value { min-height: 36px; border: 2px dashed #e5e5e5; border-radius: 6px; padding: 8px 10px; font-size: 13px; color: #aaa; font-style: italic; }
+.slot-value.filled { border-style: solid; border-color: #F47B20; color: #1a1a1a; font-style: normal; font-weight: 500; background: rgba(244,123,32,0.05); }
+.slot-value.correct-val { border-color: #16a34a; background: rgba(22,163,74,0.08); color: #15803d; }
+.slot-value.wrong-val { border-color: #dc2626; background: rgba(220,38,38,0.05); color: #dc2626; }
+.correct-hint { font-size: 11px; color: #16a34a; margin-top: 4px; font-weight: 500; }
+.should-empty { font-size: 11px; color: #dc2626; margin-top: 4px; }
+
+.fpp-slot { max-width: 280px; margin-bottom: 16px; }
+
+/* CHIPS */
+.chips-section { margin-bottom: 24px; }
+.chips-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #666; margin-bottom: 10px; }
+.chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip { border: 2px solid #e5e5e5; border-radius: 10px; padding: 10px 16px; cursor: pointer; transition: all 0.2s; background: white; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.chip:hover:not(.chip-disabled) { border-color: #F47B20; }
+.chip.chip-assigned { border-color: #F47B20; background: rgba(244,123,32,0.06); }
+.chip.chip-disabled { opacity: 0.6; cursor: default; }
+.chip-name { font-size: 14px; font-weight: 500; }
+.badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+.badge-in { background: #dcfce7; color: #15803d; }
+.badge-oon { background: #fee2e2; color: #dc2626; }
+.chip-assigned-to { font-size: 11px; color: #F47B20; font-weight: 500; }
+.chip-fpp-label { font-size: 11px; color: #7c3aed; }
+.chip-none { border: 2px solid #e5e5e5; border-radius: 10px; padding: 10px 16px; cursor: pointer; background: white; color: #888; font-size: 14px; }
+.chip-none:hover { border-color: #aaa; }
+
+/* BUTTONS */
+.btn { padding: 12px 28px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+.btn-primary { background: #F47B20; color: white; }
+.btn-primary:hover { background: #d4610a; }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-outline { background: white; color: #1a1a1a; border: 1.5px solid #e5e5e5; }
+.btn-outline:hover { background: #f5f5f5; }
+.btn-lg { padding: 14px 36px; font-size: 16px; }
+.btn-row { display: flex; justify-content: flex-end; gap: 10px; }
+
+/* RESULT */
+.result { border-radius: 10px; padding: 20px; margin-top: 16px; border: 2px solid; animation: fadeIn 0.3s ease; }
+.result.correct-result { border-color: #16a34a; background: #f0fdf4; }
+.result.wrong-result { border-color: #dc2626; background: #fef2f2; }
+.result-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.result-header span { font-size: 20px; font-weight: 700; }
+.result-header span.correct-text { color: #16a34a; }
+.result-header span.wrong-text { color: #dc2626; }
+.result-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.result-icon.correct-icon { background: #16a34a; }
+.result-icon.wrong-icon { background: #dc2626; }
+.result-sections { display: flex; flex-direction: column; gap: 12px; }
+.result-section h4 { font-size: 13px; font-weight: 700; margin-bottom: 4px; color: #333; }
+.result-section p { font-size: 14px; line-height: 1.6; color: #444; }
+.result-section .pt-resp { font-weight: 700; color: #F47B20; font-size: 15px; }
+.result-section .appt-note { color: #dc2626; font-weight: 600; }
+.explanation-box { background: rgba(0,0,0,0.04); border-radius: 8px; padding: 14px; margin-top: 4px; }
+.explanation-box p { font-size: 13px; color: #555; line-height: 1.7; }
+
+/* FINISHED */
+.finished { max-width: 600px; margin: 0 auto; padding: 60px 24px; text-align: center; }
+.finished-icon { width: 96px; height: 96px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; }
+.finished-icon.passed { background: #dcfce7; }
+.finished-icon.failed { background: #fee2e2; }
+.finished h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+.finished .big-score { font-size: 64px; font-weight: 700; line-height: 1; margin: 16px 0 4px; }
+.finished .pct { font-size: 18px; color: #666; margin-bottom: 24px; }
+.result-dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 32px; flex-wrap: wrap; }
+.result-dot { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.result-dot.pass { background: #16a34a; }
+.result-dot.fail { background: #dc2626; }
+.pass-box { background: #f0fdf4; border-radius: 10px; padding: 20px; margin-bottom: 32px; }
+.pass-box p { color: #15803d; font-weight: 500; font-size: 16px; margin-bottom: 6px; }
+.pass-box p.sub { font-weight: 400; color: #555; font-size: 14px; }
+.fail-box { background: #fef2f2; border-radius: 10px; padding: 20px; margin-bottom: 32px; }
+.fail-box p { color: #dc2626; font-weight: 500; font-size: 16px; margin-bottom: 6px; }
+.fail-box p.sub { font-weight: 400; color: #555; font-size: 14px; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.hidden { display: none; }
+.flex-center { display: flex; justify-content: center; }
+</style>
+</head>
+<body>
+
+<!-- HEADER (hidden on intro) -->
+<div class="header hidden" id="game-header">
+  <h1>Payer Order Simulator</h1>
+  <div class="score-info">
+    Scenario <span id="hdr-scenario">1</span>/10 &nbsp;·&nbsp; Score <span id="hdr-score">0</span>
+  </div>
+</div>
+
+<!-- INTRO SCREEN -->
+<div id="intro-screen" style="background:#1a1a1a; min-height:100vh;">
+  <div class="intro">
+    <div class="intro-icon">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+    </div>
+    <h1>Payer Order Simulator</h1>
+    <p>MyCHN &nbsp;·&nbsp; Insurance Verification Practice</p>
+    <div class="how-it-works">
+      <h2>How It Works</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-icon orange">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F47B20" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <h3>1. Read the Scenario</h3>
+          <p>Review the patient's insurance coverage and visit type</p>
+        </div>
+        <div class="step">
+          <div class="step-icon orange">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F47B20" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+          <h3>2. Assign Insurance</h3>
+          <p>Click a tab, then click an insurance to assign it to the correct ICE tab</p>
+        </div>
+        <div class="step">
+          <div class="step-icon green">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 0 2-2h7"/></svg>
+          </div>
+          <h3>3. Check Your Answer</h3>
+          <p>See the correct payer order, appointment box instructions, and PT responsibility</p>
+        </div>
+      </div>
+    </div>
+    <p style="text-align:center;font-size:12px;color:#666;margin-bottom:20px;font-style:italic;">Developed by: Raven Jones | Insurance Verification Supervisor</p>
+    <div class="flex-center">
+      <button class="btn btn-primary btn-lg" onclick="startGame()">Start Training →</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="game-screen" class="hidden">
+  <div class="game">
+    <!-- Progress -->
+    <div class="progress-card">
+      <div class="progress-header">
+        <span>Progress</span>
+        <span id="progress-label" style="color:#F47B20;">1 of 10</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-fill" style="width:10%;"></div>
+      </div>
+      <div class="progress-dots" id="progress-dots"></div>
+    </div>
+
+    <!-- Scenario -->
+    <div class="scenario-card">
+      <h2 id="patient-name">Patient: Rachel</h2>
+      <p id="scenario-text"></p>
+    </div>
+
+    <!-- ICE Tabs -->
+    <div class="ice-tabs" id="ice-tabs"></div>
+
+    <!-- Slots -->
+    <div class="slots" id="slots-area"></div>
+    <div id="fpp-slot-area"></div>
+
+    <!-- Chips -->
+    <div class="chips-section">
+      <div class="chips-label">Available Insurance Options</div>
+      <div class="chips" id="chips-area"></div>
+    </div>
+
+    <!-- Check Answer -->
+    <div id="check-row" class="btn-row">
+      <button class="btn btn-primary" id="check-btn" onclick="checkAnswer()">Check Answer</button>
+    </div>
+
+    <!-- Result -->
+    <div id="result-area"></div>
+  </div>
+</div>
+
+<!-- FINISHED SCREEN -->
+<div id="finished-screen" class="hidden">
+  <div class="finished">
+    <div class="finished-icon" id="finished-icon"></div>
+    <h1>Training Complete</h1>
+    <div class="big-score" id="final-score"></div>
+    <div class="pct" id="final-pct"></div>
+    <div class="result-dots" id="result-dots"></div>
+    <div id="pass-fail-box"></div>
+    <button class="btn btn-primary btn-lg" onclick="startGame()">↺ Retake Training</button>
+  </div>
+</div>
+
+<script>
+const scenarios = [
+  {
+    id:1, name:"Rachel",
+    desc:"Rachel has BCBS PPO (in-network) and Medicaid (in-network). She is coming in for a visit.",
+    options:[{id:"bcbs",name:"BCBS PPO",net:"IN"},{id:"medicaid",name:"Medicaid",net:"IN"}],
+    correct:{primary:"bcbs",secondary:"medicaid",tertiary:null,fpp:null},
+    ptResp:"$0.00 — both active and in-network",
+    apptBox:"Insurance: Primary Insurance\n2nd Insurance: Medicaid",
+    explanation:"Private/Commercial is always Primary. Medicaid is last resort and can never be Primary when another active insurance exists. No other insurance can be secondary to Medicaid."
+  },
+  {
+    id:2, name:"Sandra",
+    desc:"Sandra has Medicare Part B QMB (in-network) and Medicaid (in-network). She is dual eligible.",
+    options:[{id:"medicaid",name:"Medicaid",net:"IN"},{id:"medicare-b",name:"Medicare Part B (QMB)",net:"IN"}],
+    correct:{primary:"medicare-b",secondary:"medicaid",tertiary:null,fpp:null},
+    ptResp:"$0.00 — both active and in-network",
+    apptBox:"Insurance: Primary Insurance\n2nd Insurance: Medicaid",
+    explanation:"Medicare is always Primary over Medicaid. Dual eligible means Medicare pays first, Medicaid may cover the remainder."
+  },
+  {
+    id:3, name:"Jasmine",
+    desc:"Jasmine is 22 and has her own BCBS PPO through her job (she is the subscriber). She is also still on her mother's UHC PPO as a dependent. Both are in-network.",
+    options:[{id:"uhc-mom",name:"UHC PPO (Mom's)",net:"IN"},{id:"bcbs-own",name:"BCBS PPO (Own)",net:"IN"}],
+    correct:{primary:"bcbs-own",secondary:"uhc-mom",tertiary:null,fpp:null},
+    ptResp:"$0.00 — both active and in-network",
+    apptBox:"Insurance: Primary Insurance (BCBS)\n2nd Insurance: UHC\nVerify both active and in-network.",
+    explanation:"When a patient has two private insurances, the plan where the patient is the subscriber is always Primary. The plan where they are a dependent is always Secondary. In this case Jasmine is the subscriber on her own BCBS plan through work, and a dependent on her mom's UHC plan. Her own coverage takes priority over coverage received through a family member. Note: If a patient is a dependent on both plans, review COB details on the eligibility file for confirmation."
+  },
+  {
+    id:4, name:"Maria",
+    desc:"Maria has Aetna POS (in-network) with a $30 copay and Sliding Scale Schedule B ($25). She is coming in for a primary care visit.",
+    options:[{id:"bcbs",name:"Aetna POS",net:"IN"},{id:"ss-b",name:"Sliding Scale (Schedule B)",net:"IN"}],
+    correct:{primary:"bcbs",secondary:"ss-b",tertiary:null,fpp:null},
+    ptResp:"$25 (Schedule B) — Sliding Scale is less than the $30 copay so patient pays the lower amount",
+    apptBox:"Insurance: Primary Insurance\n2nd Insurance: Sliding Scale\nAdd Note: SS COPAY APPLIES",
+    explanation:"Private/Commercial is always Primary over Sliding Scale. If the Sliding Scale amount is less than the actual insurance copay, the patient pays the Sliding Scale amount. Always add note SS COPAY APPLIES in the appointment box."
+  },
+  {
+    id:5, name:"Kevin",
+    desc:"Kevin has Medicare Part B (in-network) only. He is coming in for an in-person visit.",
+    options:[{id:"medicare-b",name:"Medicare Part B",net:"IN"}],
+    correct:{primary:"medicare-b",secondary:null,tertiary:null,fpp:null},
+    ptResp:"$32 in-person / $19 virtual/telehealth",
+    apptBox:"Insurance: Primary Insurance only",
+    explanation:"Medicare Part B alone with no secondary. PT responsible amount differs by visit type. Always confirm in-person vs telehealth when entering PT resp amount in the appointment box. If patient has Sliding Scale: A=$2 / B=$4 / C=$6 / D=$8 / E=$10."
+  },
+  {
+    id:6, name:"Carlos",
+    desc:"Carlos has Ambetter Value (out-of-network) and Sliding Scale Schedule A ($20). He is coming in for a visit.",
+    options:[{id:"ss-a",name:"Sliding Scale (Schedule A)",net:"IN"},{id:"bcbs-oon",name:"Ambetter Value",net:"OON"}],
+    correct:{primary:"bcbs-oon",secondary:"ss-a",tertiary:null,fpp:null},
+    ptResp:"$20 (Schedule A)",
+    apptBox:"Insurance: Sliding Scale Plan\n2nd Insurance: Primary OON Plan\nAdd Note: PRIMARY OON, use Sliding Scale",
+    explanation:"ICE tabs show Ambetter Value (OON) in Primary and Sliding Scale in Secondary. However in the appointment box, select Sliding Scale as Insurance and Ambetter Value OON as 2nd Insurance."
+  },
+  {
+    id:7, name:"David",
+    desc:"David has Medicare Part A only. He does not have a sliding scale.",
+    options:[{id:"medicare-a",name:"Medicare Part A",net:"IN"},{id:"full-pay",name:"Full Pay/Prompt Pay",net:"IN"}],
+    correct:{primary:"medicare-a",secondary:"full-pay",tertiary:null,fpp:null},
+    ptResp:"$55 Medical / $75 BH",
+    apptBox:"Insurance: Full Pay/Prompt Pay\n2nd Insurance: Medicare Part A\nPT Resp: Prompt Pay",
+    explanation:"Medicare Part A has NO medical benefits and does not cover office visits. ICE tabs show Medicare Part A in Primary and Full Pay/Prompt Pay in Secondary. In the appointment box select Full Pay/Prompt Pay as Insurance and Medicare Part A as 2nd Insurance."
+  },
+  {
+    id:8, name:"James",
+    desc:"James has BCBS Marketplace HMO (not covered/out-of-network) and Medicaid (in-network). He does not have a sliding scale.",
+    options:[{id:"full-pay",name:"Full Pay/Prompt Pay",net:"IN"},{id:"bcbs-oon",name:"BCBS Marketplace HMO",net:"OON"},{id:"medicaid",name:"Medicaid",net:"IN"}],
+    correct:{primary:"bcbs-oon",secondary:"medicaid",tertiary:"full-pay",fpp:null},
+    ptResp:"$55 Medical / $75 BH / $25 BH Group Therapy",
+    apptBox:"Insurance: Full Pay/Prompt Pay\n2nd Insurance: BCBS Marketplace HMO\nAdd Note: PRIMARY OON/NOT COVERED, SECONDARY WILL NOT PAY, PT RESP Prompt Pay",
+    explanation:"ICE tabs: BCBS Marketplace HMO in Primary, Medicaid in Secondary, Full Pay/Prompt Pay in Tertiary. HMO plans do not have out-of-network coverage. When Primary is OON or not covered, Medicaid will NOT pick up the balance. Add Full Pay/Prompt Pay in the next available ICE tab. In the appointment box select Full Pay/Prompt Pay as Insurance and BCBS Marketplace HMO as 2nd Insurance."
+  },
+  {
+    id:9, name:"Aisha",
+    desc:"Aisha has BCBS PPO (in-network) and Healthy Texas Women. She is coming in for STI testing.",
+    options:[{id:"bcbs",name:"BCBS PPO",net:"IN"},{id:"htw",name:"Healthy Texas Women",net:"IN",isFPP:true}],
+    correct:{primary:"bcbs",secondary:null,tertiary:null,fpp:"htw"},
+    ptResp:"$0 — review benefit details",
+    apptBox:"Insurance: select Healthy Texas Women in FPP tab\nDo not bill Primary insurance for services covered by HTW.",
+    explanation:"HTW should NEVER be listed as Primary carrier. Private insurance goes in Primary tab. HTW goes in the Family Planning (FPP) tab only. If service is covered by HTW do not bill Primary insurance. Note: If labs are required, add HTW to the Tertiary tab. Insurance in Appt Box = FP: HEALTHY TEXAS WOMAN."
+  },
+  {
+    id:10, name:"Brianna",
+    desc:"Brianna has no private insurance and Healthy Texas Women only. She is coming in for a well woman exam.",
+    options:[{id:"full-pay",name:"Full Pay/Prompt Pay",net:"IN"},{id:"htw",name:"Healthy Texas Women",net:"IN",isFPP:true}],
+    correct:{primary:"full-pay",secondary:null,tertiary:null,fpp:"htw"},
+    ptResp:"$0 — review benefit details",
+    apptBox:"Insurance: select Healthy Texas Women in FPP tab\nIf not covered by HTW select Primary Insurance.",
+    explanation:"HTW is never Primary even when it is the only coverage. Select Full Pay or Prompt Pay as Primary carrier. HTW goes in the Family Planning (FPP) tab only. Never list HTW as the Primary carrier regardless of what other insurance exists. Note: If labs are required, add HTW to the Tertiary tab. Insurance in Appt Box = FP: HEALTHY TEXAS WOMAN."
+  }
+];
+
+let currentIdx = 0;
+let score = 0;
+let results = [];
+let assignments = {primary:null,secondary:null,tertiary:null,fpp:null};
+let selectedSlot = null;
+let checked = false;
+
+function startGame() {
+  currentIdx = 0; score = 0; results = [];
+  document.getElementById('intro-screen').classList.add('hidden');
+  document.getElementById('finished-screen').classList.add('hidden');
+  document.getElementById('game-screen').classList.remove('hidden');
+  document.getElementById('game-header').classList.remove('hidden');
+  loadScenario();
+}
+
+function loadScenario() {
+  checked = false;
+  assignments = {primary:null,secondary:null,tertiary:null,fpp:null};
+  selectedSlot = null;
+  const s = scenarios[currentIdx];
+  document.getElementById('patient-name').textContent = 'Patient: ' + s.name;
+  document.getElementById('scenario-text').textContent = s.desc;
+  document.getElementById('hdr-scenario').textContent = currentIdx + 1;
+  document.getElementById('hdr-score').textContent = score;
+  document.getElementById('progress-label').textContent = (currentIdx+1) + ' of 10';
+  document.getElementById('progress-fill').style.width = ((currentIdx+1)/10*100) + '%';
+  document.getElementById('result-area').innerHTML = '';
+  document.getElementById('check-row').classList.remove('hidden');
+  document.getElementById('check-btn').disabled = false;
+  renderDots();
+  renderTabs();
+  renderSlots();
+  renderChips();
+}
+
+function renderDots() {
+  const s = scenarios[currentIdx];
+  let html = '';
+  scenarios.forEach((_, i) => {
+    if(i < results.length) {
+      html += `<div class="dot ${results[i]?'correct':'wrong'}">${results[i]?'✓':'✗'}</div>`;
+    } else if(i === currentIdx) {
+      html += `<div class="dot current"><div class="current-inner"></div></div>`;
+    } else {
+      html += `<div class="dot"></div>`;
+    }
+  });
+  document.getElementById('progress-dots').innerHTML = html;
+}
+
+function renderTabs() {
+  const s = scenarios[currentIdx];
+  const tabs = [
+    {id:'primary',label:'Primary',cls:'active-tab'},
+    {id:'secondary',label:'Secondary',cls:'active-tab secondary-tab'},
+    {id:'tertiary',label:'Tertiary',cls:'active-tab tertiary-tab'},
+    {id:'behavioral',label:'Behavioral Health',cls:'inactive'},
+    {id:'fpp',label:'Family Planning',cls:'active-tab fpp-tab'},
+    {id:'dme',label:'DME',cls:'inactive'},
+    {id:'myconcierge',label:'MyConcierge',cls:'inactive'},
+  ];
+  const hasFPP = s.options.some(o=>o.isFPP);
+  let html = '';
+  tabs.forEach(t => {
+    if(t.cls==='inactive') {
+      html += `<button style='padding:10px 16px;font-size:13px;font-weight:500;border-radius:8px 8px 0 0;border:1px solid #b0bec5;border-bottom:none;background:#e8edf2;color:#546e7a;cursor:not-allowed;opacity:0.6;white-space:nowrap;' disabled>${t.label}</button>`;
+      return;
+    }
+    if(t.id==='fpp' && !hasFPP) {
+      html += `<button style='padding:10px 16px;font-size:13px;font-weight:500;border-radius:8px 8px 0 0;border:1px solid #b0bec5;border-bottom:none;background:#e8edf2;color:#546e7a;cursor:not-allowed;opacity:0.6;white-space:nowrap;' disabled>${t.label}</button>`;
+      return;
+    }
+    const sel = selectedSlot===t.id ? ' selected-slot' : '';
+    const asgn = assignments[t.id] ? `<span class="tab-assignment">${getName(assignments[t.id])}</span>` : '';
+    html += `<button class="ice-tab ${t.cls}${sel}" onclick="selectSlot('${t.id}')">${t.label}${asgn}</button>`;
+  });
+  document.getElementById('ice-tabs').innerHTML = html;
+}
+
+function renderSlots() {
+  const s = scenarios[currentIdx];
+  const slots = ['primary','secondary','tertiary'];
+  let html = '';
+  slots.forEach(slotId => {
+    const val = assignments[slotId];
+    const correct = s.correct[slotId];
+    let slotCls = 'slot';
+    let valCls = val ? 'slot-value filled' : 'slot-value';
+    let hint = '';
+    if(checked) {
+      slotCls += val===correct ? ' correct-slot' : (val||correct?' wrong-slot':'');
+      valCls = val ? (val===correct?'slot-value correct-val':'slot-value wrong-val') : 'slot-value';
+      if(val!==correct && correct) hint = `<div class="correct-hint">✓ Correct: ${getName(correct)}</div>`;
+      if(val!==correct && !correct && val) hint = `<div class="should-empty">Should be empty</div>`;
+    }
+    const sel = selectedSlot===slotId&&!checked ? ' selected' : '';
+    html += `<div class="${slotCls}${sel}" onclick="!checked&&selectSlot('${slotId}')">
+      <div class="slot-label">${slotId} Insurance</div>
+      <div class="${valCls}">${val?getName(val):'Select an insurance below...'}</div>
+      ${hint}
+    </div>`;
+  });
+  document.getElementById('slots-area').innerHTML = html;
+
+  // FPP slot
+  const hasFPP = s.options.some(o=>o.isFPP);
+  if(hasFPP) {
+    const val = assignments.fpp;
+    const correct = s.correct.fpp;
+    let slotCls = 'slot fpp-slot';
+    let valCls = val ? 'slot-value filled' : 'slot-value';
+    let hint = '';
+    if(checked) {
+      slotCls += val===correct ? ' correct-slot' : ' wrong-slot';
+      valCls = val ? (val===correct?'slot-value correct-val':'slot-value wrong-val') : 'slot-value';
+      if(val!==correct && correct) hint = `<div class="correct-hint">✓ Correct: ${getName(correct)}</div>`;
+    }
+    const sel = selectedSlot==='fpp'&&!checked ? ' selected' : '';
+    document.getElementById('fpp-slot-area').innerHTML = `
+      <div class="${slotCls}${sel}" onclick="!checked&&selectSlot('fpp')">
+        <div class="slot-label" style="color:#7c3aed;">Family Planning (FPP)</div>
+        <div class="${valCls}">${val?getName(val):'Select an insurance below...'}</div>
+        ${hint}
+      </div>`;
+  } else {
+    document.getElementById('fpp-slot-area').innerHTML = '';
+  }
+}
+
+function renderChips() {
+  const s = scenarios[currentIdx];
+  let html = '';
+  s.options.forEach(opt => {
+    const assignedTo = Object.entries(assignments).find(([,v])=>v===opt.id)?.[0];
+    const badgeCls = opt.net==='IN'?'badge badge-in':'badge badge-oon';
+    const chipCls = assignedTo ? 'chip chip-assigned' : (checked?'chip chip-disabled':'chip');
+    const assignedLabel = assignedTo ? `<span class="chip-assigned-to">→ ${assignedTo==='fpp'?'FPP':assignedTo}</span>` : '';
+    const fppLabel = '';
+    html += `<div class="${chipCls}" onclick="assignChip('${opt.id}')">
+      <span class="chip-name">${opt.name}</span>
+      <span class="${badgeCls}">${opt.net}</span>
+      ${fppLabel}
+      ${assignedLabel}
+    </div>`;
+  });
+  html += `<div class="chip-none" onclick="clearSlot()">None</div>`;
+  document.getElementById('chips-area').innerHTML = html;
+}
+
+function selectSlot(slotId) {
+  if(checked) return;
+  selectedSlot = selectedSlot===slotId ? null : slotId;
+  renderTabs();
+  renderSlots();
+}
+
+function assignChip(insId) {
+  if(checked || !selectedSlot) return;
+  const opt = scenarios[currentIdx].options.find(o=>o.id===insId);
+  if(opt.isFPP && selectedSlot!=='fpp') return;
+  // clear from other slots
+  Object.keys(assignments).forEach(k=>{ if(assignments[k]===insId) assignments[k]=null; });
+  assignments[selectedSlot] = assignments[selectedSlot]===insId ? null : insId;
+  selectedSlot = null;
+  renderTabs(); renderSlots(); renderChips();
+}
+
+function clearSlot() {
+  if(checked||!selectedSlot) return;
+  assignments[selectedSlot] = null;
+  selectedSlot = null;
+  renderTabs(); renderSlots(); renderChips();
+}
+
+function getName(id) {
+  if(!id) return '—';
+  const s = scenarios[currentIdx];
+  return s.options.find(o=>o.id===id)?.name||'—';
+}
+
+function checkAnswer() {
+  checked = true;
+  const s = scenarios[currentIdx];
+  const isCorrect =
+    assignments.primary===s.correct.primary &&
+    assignments.secondary===s.correct.secondary &&
+    assignments.tertiary===s.correct.tertiary &&
+    assignments.fpp===s.correct.fpp;
+  if(isCorrect) score++;
+  results.push(isCorrect);
+  renderDots(); renderSlots();
+
+  const apptNote = s.apptBox.replace(/(Add Note:[^\n]+)/g, '<span class="appt-note">$1</span>');
+
+  document.getElementById('result-area').innerHTML = `
+    <div class="result ${isCorrect?'correct-result':'wrong-result'}">
+      <div class="result-header">
+        <div class="result-icon ${isCorrect?'correct-icon':'wrong-icon'}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+            ${isCorrect?'<path d="M20 6L9 17l-5-5"/>':'<path d="M18 6L6 18M6 6l12 12"/>'}
+          </svg>
+        </div>
+        <span class="${isCorrect?'correct-text':'wrong-text'}">${isCorrect?'Correct!':'Incorrect'}</span>
+      </div>
+      <div class="result-sections">
+        <div class="result-section">
+          <h4>Correct ICE Tab Order:</h4>
+          <p>Primary = ${getName(s.correct.primary)}${s.correct.secondary?` | Secondary = ${getName(s.correct.secondary)}`:''}${s.correct.tertiary?` | Tertiary = ${getName(s.correct.tertiary)}`:''}${s.correct.fpp?` | FPP = ${getName(s.correct.fpp)}`:''}</p>
+        </div>
+        <div class="result-section">
+          <h4>Patient Responsibility:</h4>
+          <p class="pt-resp">${s.ptResp}</p>
+        </div>
+        <div class="result-section">
+          <h4>Appointment Box Instructions:</h4>
+          <p style="white-space:pre-line;">${apptNote}</p>
+        </div>
+        <div class="result-section">
+          <div class="explanation-box">
+            <h4>Explanation:</h4>
+            <p>${s.explanation}</p>
+          </div>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:20px;">
+        <button class="btn btn-primary" onclick="nextScenario()">
+          ${currentIdx<9?'Next Scenario →':'See Results'}
+        </button>
+      </div>
+    </div>`;
+
+  document.getElementById('check-row').classList.add('hidden');
+  document.getElementById('hdr-score').textContent = score;
+}
+
+function nextScenario() {
+  if(currentIdx < 9) {
+    currentIdx++;
+    loadScenario();
+  } else {
+    showFinished();
+  }
+}
+
+function showFinished() {
+  document.getElementById('game-screen').classList.add('hidden');
+  document.getElementById('finished-screen').classList.remove('hidden');
+  const passed = score >= 8;
+  const pct = Math.round(score/10*100);
+  document.getElementById('finished-icon').className = `finished-icon ${passed?'passed':'failed'}`;
+  document.getElementById('finished-icon').innerHTML = passed
+    ? `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>`
+    : `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>`;
+  document.getElementById('final-score').textContent = score + '/10';
+  document.getElementById('final-pct').textContent = pct + '% Score';
+  let dots = '';
+  results.forEach(r => {
+    dots += `<div class="result-dot ${r?'pass':'fail'}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+        ${r?'<path d="M20 6L9 17l-5-5"/>':'<path d="M18 6L6 18M6 6l12 12"/>'}
+      </svg></div>`;
+  });
+  document.getElementById('result-dots').innerHTML = dots;
+  document.getElementById('pass-fail-box').innerHTML = passed
+    ? `<div class="pass-box"><p>Congratulations! You passed the training.</p><p class="sub">You demonstrated strong understanding of payer order rules and COB guidelines.</p></div>`
+    : `<div class="fail-box"><p>You need 80% or higher to pass.</p><p class="sub">Please review the COB worksheet and retake the training to improve your understanding.</p></div>`;
+}
+</script>
+</body>
+</html>
