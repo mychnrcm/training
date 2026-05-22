@@ -274,11 +274,11 @@ const scenarios = [
   {
     id:2, name:"Sandra",
     desc:"Sandra has Medicare Part B QMB (in-network) and Medicaid (in-network). She is dual eligible.",
-    options:[{id:"medicaid",name:"Medicaid",net:"IN"},{id:"medicare-b",name:"Medicare Part B (QMB)",net:"IN"}],
+    options:[{id:"medicaid",name:"Medicaid",net:"IN"},{id:"medicare-b",name:"Medicare Part B (QMB)",net:"IN"},{id:"emergency-medicaid",name:"Emergency Medicaid",net:"IN"}],
     correct:{primary:"medicare-b",secondary:"medicaid",tertiary:null,fpp:null},
     ptResp:"$0.00 — both active and in-network",
     apptBox:"Insurance: Primary Insurance\n2nd Insurance: Medicaid",
-    explanation:"Medicare is always Primary over Medicaid. Dual eligible means Medicare pays first, Medicaid may cover the remainder."
+    explanation:"Medicare is always Primary over Medicaid. Dual eligible means Medicare pays first, Medicaid may cover the remainder. Note: Emergency Medicaid is not the same as regular Medicaid — it only covers ER and hospital services and does not cover medical office visits."
   },
   {
     id:3, name:"Jasmine",
@@ -319,7 +319,7 @@ const scenarios = [
   {
     id:7, name:"David",
     desc:"David has Medicare Part A only. He does not have a sliding scale.",
-    options:[{id:"medicare-a",name:"Medicare Part A",net:"IN"},{id:"full-pay",name:"Full Pay/Prompt Pay",net:"IN"}],
+    options:[{id:"medicare-a",name:"Medicare Part A",net:"IN"},{id:"full-pay",name:"Full Pay/Prompt Pay",net:"IN"},{id:"mqmb",name:"Medicare/Medicaid MQMB",net:"IN"}],
     correct:{primary:"medicare-a",secondary:"full-pay",tertiary:null,fpp:null},
     ptResp:"$55 Medical / $75 BH",
     apptBox:"Insurance: Full Pay/Prompt Pay\n2nd Insurance: Medicare Part A\nPT Resp: Prompt Pay",
@@ -337,11 +337,11 @@ const scenarios = [
   {
     id:9, name:"Aisha",
     desc:"Aisha has BCBS PPO (in-network) and Healthy Texas Women. She is coming in for STI testing.",
-    options:[{id:"bcbs",name:"BCBS PPO",net:"IN"},{id:"htw",name:"Healthy Texas Women",net:"IN",isFPP:true}],
+    options:[{id:"bcbs",name:"BCBS PPO",net:"IN"},{id:"htw",name:"Healthy Texas Women",net:"IN",isFPP:true},{id:"uhc-medicaid",name:"UHC Medicaid",net:"IN"}],
     correct:{primary:"bcbs",secondary:null,tertiary:null,fpp:"htw"},
     ptResp:"$0 — review benefit details",
     apptBox:"Insurance: select Healthy Texas Women in FPP tab\nDo not bill Primary insurance for services covered by HTW.",
-    explanation:"HTW should NEVER be listed as Primary carrier. Private insurance goes in Primary tab. HTW goes in the Family Planning (FPP) tab only. If service is covered by HTW do not bill Primary insurance. Note: If labs are required, add HTW to the Tertiary tab. Insurance in Appt Box = FP: HEALTHY TEXAS WOMAN."
+    explanation:"HTW should NEVER be listed as Primary carrier. Private insurance goes in Primary tab. HTW goes in the Family Planning (FPP) tab only. If service is covered by HTW do not bill Primary insurance. Note: If labs are required, add HTW to the Tertiary tab. Insurance in Appt Box = FP: HEALTHY TEXAS WOMAN. A patient can only be enrolled in one Medicaid program at a time — if a patient has HTW, UHC Medicaid or any other Medicaid plan should not be added."
   },
   {
     id:10, name:"Brianna",
