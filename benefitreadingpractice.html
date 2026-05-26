@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Benefits Reading Practice</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f3f4f6; }
+
+/* INTRO */
+.intro { min-height: 100vh; background: #e8e8e8; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 24px; }
+.intro-card { background: white; border-radius: 20px; padding: 48px 40px; max-width: 520px; width: 100%; text-align: center; box-shadow: 0 8px 40px rgba(0,0,0,0.12); }
+.intro-card h1 { font-size: 34px; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; }
+.intro-card .subtitle { font-size: 16px; color: #888; margin-bottom: 32px; }
+.intro-badges { display: flex; gap: 10px; justify-content: center; margin-bottom: 32px; flex-wrap: wrap; }
+.badge { background: #f3f4f6; color: #555; padding: 7px 16px; border-radius: 20px; font-size: 13px; }
+.btn-pink { background: #e91e8c; color: white; border: none; padding: 16px 48px; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 24px; }
+.btn-pink:hover { background: #c4187a; }
+.btn-teal { background: #1B8A6B; color: white; border: none; padding: 14px 36px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.btn-teal:hover { background: #157a5e; }
+.intro-credit { color: #bbb; font-size: 11px; font-style: italic; }
+
+/* GAME */
+.game { max-width: 860px; margin: 0 auto; padding: 20px; }
+.progress-header { display: flex; justify-content: space-between; font-size: 13px; color: #555; margin-bottom: 6px; }
+.progress-bar-bg { height: 6px; background: #e5e7eb; border-radius: 3px; margin-bottom: 20px; }
+.progress-bar-fill { height: 100%; background: #1B8A6B; border-radius: 3px; transition: width 0.3s; }
+.patient-card { background: white; border-left: 4px solid #1B8A6B; border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; font-size: 15px; font-weight: 500; color: #1a1a1a; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+
+/* ICE BOX */
+.ice-box { background: white; border: 2px solid #d1d5db; border-radius: 10px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.ice-box-title { font-size: 12px; font-weight: 600; color: #555; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+.ice-field { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 13px; }
+.ice-label { color: #555; font-weight: 500; min-width: 110px; }
+.ice-input-row { display: flex; align-items: center; gap: 6px; }
+.ice-dollar { font-size: 15px; font-weight: 600; color: #333; }
+.ice-input { border: 1px solid #d1d5db; border-radius: 4px; padding: 6px 10px; font-size: 14px; width: 120px; outline: none; }
+.ice-input:focus { border-color: #1B8A6B; }
+.ice-input.correct { border-color: #16a34a; background: #f0fdf4; }
+.ice-input.wrong { border-color: #dc2626; background: #fef2f2; }
+.ice-pmt { font-size: 11px; color: #999; margin-top: 8px; }
+.btn-submit { background: #1B8A6B; color: white; border: none; padding: 10px 28px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 12px; }
+.btn-submit:hover { background: #157a5e; }
+
+/* EXPLANATION */
+.explanation { border-radius: 10px; padding: 16px 20px; margin-bottom: 16px; border: 1.5px solid; }
+.explanation.correct { background: #f0fdf4; border-color: #16a34a; }
+.explanation.wrong { background: #fef2f2; border-color: #dc2626; }
+.explanation-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-weight: 700; font-size: 15px; }
+.explanation-text { font-size: 14px; color: #444; line-height: 1.7; margin-bottom: 12px; }
+.appt-box-demo { background: #f8f8f8; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; font-size: 12px; }
+.appt-box-demo-title { font-size: 11px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.appt-box-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; flex-wrap: wrap; }
+.appt-box-lbl { color: #555; min-width: 100px; font-weight: 500; }
+.appt-box-val { background: #f0f0f0; border: 1px solid #ccc; border-radius: 3px; padding: 3px 10px; font-size: 12px; color: #333; }
+.appt-box-check { background: #dc2626; color: white; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: bold; }
+.appt-box-status { color: #888; font-size: 11px; }
+.appt-box-note { font-size: 11px; color: #555; margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee; }
+.btn-next { background: #1B8A6B; color: white; border: none; padding: 10px 28px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.btn-next:hover { background: #157a5e; }
+
+/* COMPLETION SCREEN */
+.completion { max-width: 600px; margin: 0 auto; padding: 60px 24px; text-align: center; }
+.completion-card { background: white; border-radius: 20px; padding: 48px 40px; box-shadow: 0 8px 40px rgba(0,0,0,0.1); }
+.completion-score { font-size: 72px; font-weight: 700; color: #1B8A6B; line-height: 1; margin: 16px 0 8px; }
+.completion-subtitle { font-size: 18px; color: #666; margin-bottom: 32px; }
+.completion-divider { border: none; border-top: 1px solid #eee; margin: 24px 0; }
+.completion-additional { font-size: 14px; color: #555; margin-bottom: 20px; }
+
+/* FINAL SUMMARY */
+.summary { max-width: 700px; margin: 0 auto; padding: 40px 24px; }
+.summary-card { background: white; border-radius: 16px; padding: 40px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 24px; }
+.summary-pct { font-size: 64px; font-weight: 700; color: #1B8A6B; }
+.summary-result { display: flex; align-items: center; gap: 12px; background: white; border-radius: 10px; padding: 12px 16px; margin-bottom: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border-left: 4px solid; }
+.summary-result.correct { border-color: #16a34a; }
+.summary-result.wrong { border-color: #dc2626; }
+
+/* MOCK SCREENS */
+.mock-screen { background: white; border-radius: 10px; overflow: hidden; border: 1px solid #e0e0e0; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+
+/* Plan header bar */
+.plan-bar { padding: 10px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #eee; flex-wrap: wrap; }
+.plan-name { font-size: 13px; font-weight: 600; color: #1a1a1a; }
+.badge-active { background: #1a6e1a; color: white; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+.badge-in { background: #dcfce7; color: #15803d; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: bold; }
+
+/* Tabs */
+.av-tabs { display: flex; border-bottom: 2px solid #003087; padding: 0 14px; overflow-x: auto; background: white; }
+.av-tab { padding: 7px 11px; font-size: 11px; color: #003087; cursor: pointer; white-space: nowrap; }
+.av-tab.active { font-weight: bold; border-bottom: 2px solid #003087; margin-bottom: -2px; }
+.uhc-tabs { display: flex; border-bottom: 1px solid #ddd; padding: 0 14px; overflow-x: auto; background: white; }
+.uhc-tab { padding: 7px 11px; font-size: 11px; color: #002677; cursor: pointer; white-space: nowrap; }
+.uhc-tab.active { font-weight: bold; border-bottom: 2px solid #002677; }
+
+.mock-body { padding: 14px; }
+.warning-box { background: #fff8e1; border-left: 4px solid #f9a825; padding: 6px 10px; font-size: 11px; color: #555; margin-bottom: 10px; border-radius: 0 4px 4px 0; }
+.pcp-box { background: #fce4ec; border-left: 4px solid #c62828; padding: 6px 10px; font-size: 11px; color: #333; margin-bottom: 10px; border-radius: 0 4px 4px 0; }
+
+/* Deductible boxes */
+.ded-section { background: #f8f9fa; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 10px; }
+.ded-section-title { font-size: 11px; font-weight: bold; color: #555; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.ded-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ded-box { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; }
+.ded-box-title { font-size: 10px; font-weight: bold; color: #003087; margin-bottom: 6px; }
+.ded-row { display: flex; justify-content: space-between; font-size: 11px; padding: 1px 0; }
+.ded-lbl { color: #777; }
+.ded-val { font-weight: 500; }
+.ded-remaining { color: #dc2626; font-weight: bold; }
+.ded-remaining.met { color: #16a34a; }
+.progress-bar { height: 6px; background: #e5e7eb; border-radius: 3px; margin: 4px 0; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 3px; }
+.progress-fill.blue { background: #003087; }
+.progress-fill.green { background: #16a34a; }
+.progress-fill.uhc { background: #002677; }
+
+/* Benefit table */
+.benefit-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 10px; }
+.benefit-table th { background: #003087; color: white; padding: 6px 8px; text-align: left; }
+.benefit-table td { padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: top; }
+
+/* UHC specific */
+.uhc-plan-bar { background: #002677; color: white; padding: 10px 14px; }
+.uhc-status-bar { background: #e8f5e9; border-bottom: 1px solid #a5d6a7; padding: 6px 14px; font-size: 11px; display: flex; gap: 12px; flex-wrap: wrap; }
+.uhc-ded-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 12px; }
+.uhc-ded-box { border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; background: white; }
+.uhc-ded-title { font-size: 11px; font-weight: bold; color: #002677; margin-bottom: 6px; }
+
+/* CHIP */
+.chip-plan-bar { background: #F47B20; color: white; padding: 10px 14px; }
+.chip-report-title { text-align: center; font-size: 13px; font-weight: bold; color: #F47B20; padding: 10px; border-bottom: 1px solid #eee; }
+.chip-verified { text-align: center; font-size: 10px; color: #dc2626; font-style: italic; padding: 4px; border-bottom: 1px solid #eee; }
+.chip-grid { display: grid; grid-template-columns: 1fr 1fr; font-size: 11px; }
+.chip-lbl { padding: 5px 12px; color: #666; border-bottom: 1px solid #f0f0f0; }
+.chip-val { padding: 5px 12px; font-weight: 500; border-bottom: 1px solid #f0f0f0; }
+.chip-val.blue { color: #0066cc; font-weight: bold; }
+.chip-copay-title { background: #fde8d8; color: #F47B20; font-weight: bold; font-size: 12px; padding: 6px 12px; text-align: center; border-top: 1px solid #eee; }
+.chip-copay-note { font-size: 10px; color: #666; padding: 5px 12px; text-align: center; border-bottom: 1px solid #eee; font-style: italic; }
+.chip-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.chip-table th { background: #F47B20; color: white; padding: 5px 12px; text-align: left; }
+.chip-table td { padding: 5px 12px; border-bottom: 1px solid #f0f0f0; }
+
+/* Oscar */
+.oscar-plan-bar { background: #FA4616; color: white; padding: 10px 14px; }
+.oscar-body { display: grid; grid-template-columns: 200px 1fr; }
+.oscar-sidebar { background: #f8f8f8; padding: 12px; border-right: 1px solid #eee; font-size: 11px; }
+.oscar-sidebar-lbl { font-size: 9px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; margin-top: 8px; }
+.oscar-sidebar-val { font-size: 12px; font-weight: 500; color: #111; }
+.oscar-main { padding: 12px; }
+.oscar-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.oscar-table th { color: #555; padding: 5px 8px; text-align: left; border-bottom: 2px solid #eee; }
+.oscar-table td { padding: 5px 8px; border-bottom: 1px solid #f0f0f0; }
+
+/* PDF */
+.pdf-wrap { padding: 16px; font-size: 12px; }
+.pdf-title { font-size: 14px; font-weight: bold; text-align: center; color: #1a1a1a; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 2px solid #333; }
+.pdf-org-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 11px; border: 1px solid #ddd; padding: 8px; margin-bottom: 10px; border-radius: 4px; }
+.pdf-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 10px; }
+.pdf-table th { background: #1a1a1a; color: white; padding: 5px 8px; text-align: left; }
+.pdf-table td { padding: 5px 8px; border-bottom: 1px solid #eee; }
+.pdf-table tr:nth-child(even) td { background: #f9f9f9; }
+.not-covered { color: #c62828; font-weight: bold; }
+.covered-green { color: #1a6e1a; }
+.oop-met-box { background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 4px; padding: 10px; }
+.ded-status-box { background: #fde8d8; border: 1px solid #f0a070; border-radius: 4px; padding: 8px; font-size: 11px; }
+.meritain-section { background: #f0f4ff; border: 1px solid #c5d4f0; border-radius: 6px; padding: 12px; margin-top: 10px; }
+.scroll-hint { font-size: 10px; color: #aaa; margin-bottom: 6px; }
+
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- INTRO -->
+<div id="intro">
+  <div class="intro">
+    <div class="intro-card">
+      <div style="width:72px;height:72px;background:#1B8A6B;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <rect x="9" y="3" width="6" height="4" rx="1" stroke="white" stroke-width="2"/>
+          <path d="M9 12h6M9 16h4" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1>Benefits Reading Practice</h1>
+      <p class="subtitle">MyCHN &nbsp;·&nbsp; Insurance Verification Practice</p>
+      <div class="intro-badges">
+        <span class="badge">📋 6 Core Scenarios</span>
+        <span class="badge">🖥 Real Portal Layouts</span>
+      </div>
+      <button class="btn-pink" onclick="startGame('core')">Start Practice</button>
+      <p class="intro-credit">Developed by: Raven Jones | Revenue Cycle</p>
+    </div>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="game" class="hidden">
+  <div class="game">
+    <div class="progress-header">
+      <span id="progress-label">Scenario 1 of 6</span>
+      <span id="score-label">Score: 0 / 0</span>
+    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill" style="width:16%"></div></div>
+    <div class="patient-card" id="patient-sentence"></div>
+    <div id="mock-screen"></div>
+    <div class="ice-box">
+      <div class="ice-box-title">ICE — Appointment Box</div>
+      <div class="ice-field">
+        <span class="ice-label">Patient Resp:</span>
+        <div class="ice-input-row">
+          <span class="ice-dollar">$</span>
+          <input class="ice-input" type="text" id="pt-resp-input" placeholder="0.00" onkeydown="if(event.key==='Enter')submitAnswer()">
+        </div>
+      </div>
+      <div class="ice-pmt">Pmt Status: Not Yet Requested $0.00 received.</div>
+      <button class="btn-submit" id="submit-btn" onclick="submitAnswer()">Submit</button>
+    </div>
+    <div id="explanation-area"></div>
+  </div>
+</div>
+
+<!-- COMPLETION SCREEN -->
+<div id="completion" class="hidden">
+  <div class="completion">
+    <div class="completion-card">
+      <h1 style="font-size:26px;font-weight:700;color:#1a1a1a;">Core Practice Complete!</h1>
+      <div class="completion-score" id="completion-score"></div>
+      <div class="completion-subtitle" id="completion-subtitle"></div>
+      <hr class="completion-divider">
+      <p class="completion-additional">Want to keep going? Take on 5 more benefit reading scenarios.</p>
+      <button class="btn-teal" onclick="startGame('additional')" style="margin-bottom:14px;display:block;width:100%;">Additional Training →</button>
+      <button onclick="showFinalSummary()" style="background:none;border:none;color:#aaa;font-size:13px;cursor:pointer;text-decoration:underline;">Skip to results</button>
+    </div>
+  </div>
+</div>
+
+<!-- FINAL SUMMARY -->
+<div id="summary" class="hidden">
+  <div class="summary">
+    <div class="summary-card">
+      <h1 style="font-size:26px;font-weight:700;margin-bottom:8px;">Practice Complete!</h1>
+      <div class="summary-pct" id="summary-pct"></div>
+      <div style="font-size:18px;color:#666;margin-bottom:24px;" id="summary-subtitle"></div>
+      <button class="btn-pink" onclick="restartGame()" style="width:auto;padding:12px 36px;">↺ Restart Practice</button>
+    </div>
+    <h2 style="font-size:16px;font-weight:600;margin-bottom:12px;color:#333;">Review Your Answers</h2>
+    <div id="summary-results"></div>
+  </div>
+</div>
+
+<script>
+const coreScenarios = [
+  {
+    id:1,
+    patient:"Maria has active Blue Cross Blue Shield PPO and is coming in for a primary care visit today.",
+    answers:["55","55.00","$55","$55.00"],
+    correct:"$55",
+    explanation:"No copay is listed on this plan and the individual deductible has not been met ($2,500 remaining). When deductible applies with no set copay, MyCHN charges Prompt Pay medical rate. Enter $55.",
+    apptBox: null,
+    renderMock: renderBCBSPPO_S1
+  },
+  {
+    id:2,
+    patient:"James has active Blue Cross Blue Shield PPO and is coming in for a primary care visit today.",
+    answers:["30","30.00","$30","$30.00"],
+    correct:"$30",
+    explanation:"Deductible is met ($0 remaining) but a $30 copay is listed. Per MyCHN rules, copay always applies regardless of deductible status. Enter $30.",
+    apptBox: null,
+    renderMock: renderBCBSPPO_S2
+  },
+  {
+    id:3,
+    patient:"Sofia has active Blue Cross Blue Shield HMO and is coming in for her annual wellness exam today. She was advised last visit to update her PCP to MyCHN but has not done so.",
+    answers:["55","55.00","$55","$55.00"],
+    correct:"$55",
+    explanation:"HMO plans require PCP assignment. MyCHN is NOT this patient's PCP.. Dr. R. Peterson is listed. Charge Full Pay $55. The appointment box must be updated.. see below.",
+    apptBox: {
+      insurance:"secondary: Full Pay / Prompt Pay",
+      secondInsurance:"primary: Blue Cross Blue Shield HMO",
+      note:"Since MyCHN is not the patient's PCP.. set Insurance to Full Pay/Prompt Pay and list BCBS HMO as 2nd Insurance so staff are aware of the plan on file."
+    },
+    renderMock: renderBCBSHMO
+  },
+  {
+    id:4,
+    patient:"Kevin has active Ambetter Standard Silver and is coming in for a primary care visit today.",
+    answers:["0","0.00","$0","$0.00"],
+    correct:"$0",
+    explanation:"Plan has no deductible so deductible does not apply. PCP copay is $0. Patient responsibility is $0. When a plan shows $0 deductible it means deductible is simply not part of this plan structure.",
+    apptBox: null,
+    renderMock: renderAmbetterSilver
+  },
+  {
+    id:5,
+    patient:"Michele has active UnitedHealthcare POS Choice Plus and is coming in for a physician office visit today.",
+    answers:["55","55.00","$55","$55.00"],
+    correct:"$55",
+    explanation:"No copay ($0 listed) and deductible has not been met.. $6,645.54 remaining. Charge Prompt Pay medical rate $55. Always check the Deductibles and Maximums tab on the UHC portal.. deductible info is not always visible on the main benefits page.",
+    apptBox: null,
+    renderMock: renderUHC
+  },
+  {
+    id:6,
+    patient:"Arria has active CHIP and is coming in for a birth control shot today.",
+    answers:["55","55.00","$55","$55.00"],
+    correct:"$55",
+    explanation:"TRICK QUESTION. Even though the eligibility screen shows a $5 office visit copay, contraception is NOT a covered service under CHIP. Non-covered services are charged at Prompt Pay rate $55. The appointment box must be updated — see below.",
+    apptBox: {
+      insurance:"secondary: Full Pay / Prompt Pay",
+      secondInsurance:"primary: CHIP",
+      note:"Since contraception is not covered under CHIP.. set Insurance to Full Pay/Prompt Pay and list CHIP as 2nd Insurance so staff are aware of the plan on file."
+    },
+    renderMock: renderCHIP
+  }
+];
+
+const additionalScenarios = [
+  {
+    id:7,
+    patient:"Carlos has active Aetna Choice POS II administered by Meritain Health and is coming in for a chronic care visit today.",
+    answers:["0","0.00","$0","$0.00"],
+    correct:"$0",
+    explanation:"Deductible is met ($0 remaining) and no copay is listed. Per MyCHN rules, coinsurance is waived when deductible is met and no copay exists. PT resp is $0. Key note: For Meritain plans, deductible information sometimes is NOT shown at the top of the screen.. may need to scroll under benefit to reveal.",
+    apptBox: null,
+    renderMock: renderMeritain
+  },
+  {
+    id:8,
+    patient:"Brianna has active Ambetter Everyday Gold and is coming in for a primary care visit today.",
+    answers:["0","0.00","$0","$0.00"],
+    correct:"$0",
+    explanation:"Even though the plan has a $35 PCP copay, the Family Out-of-Pocket maximum has been met ($0 remaining). Once the Family OOP is met, all covered services are $0 for all members on the plan regardless of individual OOP status.",
+    apptBox: null,
+    renderMock: renderAmbetterGold
+  },
+  {
+    id:9,
+    patient:"Carlos has an active SBMA plan through his employer and is coming in for a primary care visit today. Benefits were obtained by calling the number on the back of the card.",
+    answers:["55","55.00","$55","$55.00"],
+    correct:"$55",
+    explanation:"Smaller SBMA plan with no portal.. benefits obtained by phone. No copay (N/A) and deductible not met. Per MyCHN rules, charge Prompt Pay medical rate $55. Always document benefit details when calling for smaller plans.",
+    apptBox: null,
+    renderMock: renderSBMA
+  },
+  {
+    id:10,
+    patient:"Aaliyah has an active SBMA plan and is coming in for a therapy visit today.",
+    answers:["75","75.00","$75","$75.00"],
+    correct:"$75",
+    explanation:"Mental Health is listed as NOT COVERED under this plan. When a service is not covered, MyCHN charges Prompt Pay BH rate $75. Do not bill insurance for non-covered services. Always check the specific service line when reading PDF/call-in benefits.",
+    apptBox: null,
+    renderMock: renderSBMANotCovered
+  },
+  {
+    id:11,
+    patient:"Terri has active Oscar Bronze Elite and is coming in for her annual wellness exam today. She has not had one in over a year.",
+    answers:["0","0.00","$0","$0.00"],
+    correct:"$0",
+    explanation:"Annual wellness and preventive visits are covered at $0 regardless of deductible status for most plans. Preventive care is not subject to the deductible. PT resp is $0.",
+    apptBox: null,
+    renderMock: renderOscar
+  }
+];
+
+let currentSet = [], current = 0, score = 0, results = [], submitted = false, mode = 'core';
+
+function startGame(m) {
+  mode = m;
+  current = 0; submitted = false;
+  if(m === 'core') { currentSet = coreScenarios; score = 0; results = []; }
+  else { currentSet = additionalScenarios; }
+  document.getElementById('intro').classList.add('hidden');
+  document.getElementById('completion').classList.add('hidden');
+  document.getElementById('game').classList.remove('hidden');
+  loadScenario();
+}
+
+function loadScenario() {
+  submitted = false;
+  const s = currentSet[current];
+  const total = currentSet.length;
+  document.getElementById('patient-sentence').textContent = s.patient;
+  document.getElementById('progress-label').textContent = 'Scenario ' + (current+1) + ' of ' + total + (mode==='additional'?' (Additional)':'');
+  document.getElementById('score-label').textContent = 'Score: ' + score + ' / ' + results.length;
+  document.getElementById('progress-fill').style.width = ((current+1)/total*100) + '%';
+  document.getElementById('pt-resp-input').value = '';
+  document.getElementById('pt-resp-input').className = 'ice-input';
+  document.getElementById('pt-resp-input').disabled = false;
+  document.getElementById('submit-btn').classList.remove('hidden');
+  document.getElementById('explanation-area').innerHTML = '';
+  document.getElementById('mock-screen').innerHTML = s.renderMock();
+  window.scrollTo(0,0);
+}
+
+function submitAnswer() {
+  if(submitted) return;
+  const input = document.getElementById('pt-resp-input');
+  const val = input.value.trim();
+  if(!val) return;
+  submitted = true;
+  const norm = val.replace(/^\$/,'');
+  const isCorrect = currentSet[current].answers.some(a => a.replace(/^\$/,'') === norm);
+  results.push(isCorrect);
+  if(isCorrect) score++;
+  input.className = 'ice-input ' + (isCorrect ? 'correct' : 'wrong');
+  input.disabled = true;
+  document.getElementById('submit-btn').classList.add('hidden');
+  document.getElementById('score-label').textContent = 'Score: ' + score + ' / ' + results.length;
+  const s = currentSet[current];
+  const isLast = current === currentSet.length - 1;
+
+  let apptBoxHTML = '';
+  if(s.apptBox) {
+    apptBoxHTML = `<div class="appt-box-demo">
+      <div class="appt-box-demo-title">Appointment Box — How to Update</div>
+      <div class="appt-box-row">
+        <span class="appt-box-lbl">Insurance:</span>
+        <span class="appt-box-val">${s.apptBox.insurance}</span>
+        <span class="appt-box-check">Check</span>
+        <span class="appt-box-status">Not Checked ▼</span>
+      </div>
+      <div class="appt-box-row">
+        <span class="appt-box-lbl">2nd Insurance:</span>
+        <span class="appt-box-val">${s.apptBox.secondInsurance}</span>
+        <span class="appt-box-check">Check</span>
+        <span class="appt-box-status">Not Checked ▼</span>
+      </div>
+      <div class="appt-box-note">${s.apptBox.note}</div>
+    </div>`;
+  }
+
+  let nextAction = isLast
+    ? (mode === 'core' ? 'showCompletion()' : 'showFinalSummary()')
+    : 'nextScenario()';
+  let nextLabel = isLast
+    ? (mode === 'core' ? 'See Results' : 'View Final Results')
+    : 'Next Scenario →';
+
+  document.getElementById('explanation-area').innerHTML = `
+    <div class="explanation ${isCorrect?'correct':'wrong'}">
+      <div class="explanation-header ${isCorrect?'correct':'wrong'}">
+        ${isCorrect ? '✓ Correct!' : '✗ Incorrect'}
+        ${!isCorrect ? '<span style="color:#555;font-weight:400;font-size:14px;margin-left:8px;">Correct answer: <strong style="color:#16a34a;">' + s.correct + '</strong></span>' : ''}
+      </div>
+      <div class="explanation-text">${s.explanation}</div>
+      ${apptBoxHTML}
+      <button class="btn-next" onclick="${nextAction}">${nextLabel}</button>
+    </div>`;
+}
+
+function nextScenario() { current++; loadScenario(); }
+
+function showCompletion() {
+  document.getElementById('game').classList.add('hidden');
+  document.getElementById('completion').classList.remove('hidden');
+  const coreScore = results.filter(Boolean).length;
+  const pct = Math.round(coreScore / coreScenarios.length * 100);
+  document.getElementById('completion-score').textContent = coreScore + ' / ' + coreScenarios.length;
+  document.getElementById('completion-subtitle').textContent = pct + '% — Core Practice Complete';
+}
+
+function showFinalSummary() {
+  document.getElementById('game').classList.add('hidden');
+  document.getElementById('completion').classList.add('hidden');
+  document.getElementById('summary').classList.remove('hidden');
+  const allScenarios = [...coreScenarios, ...additionalScenarios];
+  const pct = Math.round(score / results.length * 100);
+  document.getElementById('summary-pct').textContent = pct + '%';
+  document.getElementById('summary-subtitle').textContent = score + ' out of ' + results.length + ' correct';
+  let html = '';
+  results.forEach((r,i) => {
+    const s = allScenarios[i];
+    html += `<div class="summary-result ${r?'correct':'wrong'}">
+      <span style="font-size:13px;color:#555;flex:1;">Scenario ${i+1}: ${s.patient.split(' ').slice(0,5).join(' ')}...</span>
+      <span style="font-size:13px;font-weight:600;color:#1B8A6B;">Correct: ${s.correct}</span>
+    </div>`;
+  });
+  document.getElementById('summary-results').innerHTML = html;
+}
+
+function restartGame() {
+  current=0; score=0; results=[]; submitted=false;
+  document.getElementById('summary').classList.add('hidden');
+  document.getElementById('intro').classList.remove('hidden');
+}
+
+// ─── MOCK SCREENS ─────────────────────────────────────────
+
+function planBar(payer, plan, color) {
+  return `<div style="background:${color||'#003087'};color:white;padding:10px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <span class="badge-active" style="background:rgba(255,255,255,0.25);color:white;font-size:11px;padding:2px 8px;border-radius:4px;font-weight:bold;">Active Coverage</span>
+    <span style="font-size:13px;font-weight:600;">${payer}</span>
+    ${plan?`<span style="font-size:11px;opacity:0.85;">| ${plan}</span>`:''}
+  </div>`;
+}
+
+function avTabs(tabs, active) {
+  return `<div class="av-tabs">${tabs.map(t=>`<div class="av-tab ${t===active?'active':''}">${t}</div>`).join('')}</div>`;
+}
+
+function dedBox(title, limit, met, rem, isMet) {
+  return `<div class="ded-box">
+    <div class="ded-box-title">${title}</div>
+    <div class="ded-row"><span class="ded-lbl">Limit:</span><span class="ded-val">${limit}</span></div>
+    ${met ? `<div class="ded-row"><span class="ded-lbl">Met Year to Date:</span><span class="ded-val">${met}</span></div>` : ''}
+    <div class="progress-bar"><div class="progress-fill ${isMet?'green':'blue'}" style="width:${isMet?100:0}%"></div></div>
+    <div class="ded-row"><span class="ded-lbl">Remaining:</span><span class="ded-remaining ${isMet?'met':''}">${rem}${isMet?' ✓ MET':' Remaining'}</span></div>
+  </div>`;
+}
+
+function benefitRow(service, coIns, copay, ded) {
+  return `<tr>
+    <td><span class="badge-in">In Network</span><div style="color:#666;font-size:10px;margin-top:2px;">Place of Service: Office | Coverage Level: Individual<br>• ${service}</div></td>
+    <td>${coIns}</td><td style="font-weight:600;">${copay}</td>
+    <td style="color:#003087;font-size:10px;">${ded}</td><td>—</td>
+  </tr>`;
+}
+
+function benefitTable(rows) {
+  return `<table class="benefit-table"><thead><tr><th>Information / Details</th><th>Co-Insurance</th><th>Co-Payment</th><th>Benefit Deductible</th><th>Limitations</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function renderBCBSPPO_S1() {
+  return `<div class="mock-screen">
+    ${planBar('Blue Cross Blue Shield of Texas','PPO')}
+    ${avTabs(['Patient Demographics','Policies','Coordination of Benefits','Deductibles & Maximums','Detailed Benefits'],'Detailed Benefits')}
+    <div class="mock-body">
+      <div class="ded-section">
+        <div class="ded-section-title">Annual Deductible & Out-of-Pocket</div>
+        <div class="ded-grid">
+          ${dedBox('Annual Deductible — Individual, In-Network','$2,500 / Service Year(s)','$0.00','$2,500',false)}
+          ${dedBox('Out of Pocket Maximum — Individual, In-Network','$4,500 / Service Year(s)','$0.00','$4,500',false)}
+        </div>
+      </div>
+      ${benefitTable(benefitRow('OFFICE VISIT - PROFESSIONAL','20% / Visit(s)','—','Refer to: Health Benefit Plan Coverage'))}
+    </div>
+  </div>`;
+}
+
+function renderBCBSPPO_S2() {
+  return `<div class="mock-screen">
+    ${planBar('Blue Cross Blue Shield of Texas','PPO')}
+    ${avTabs(['Patient Demographics','Policies','Coordination of Benefits','Deductibles & Maximums','Detailed Benefits'],'Detailed Benefits')}
+    <div class="mock-body">
+      <div class="ded-section">
+        <div class="ded-section-title">Annual Deductible & Out-of-Pocket</div>
+        <div class="ded-grid">
+          ${dedBox('Annual Deductible — Individual, In-Network','$2,000 / Service Year(s)','$2,000.00','$0.00',true)}
+          ${dedBox('Out of Pocket Maximum — Individual, In-Network','$4,000 / Service Year(s)','$1,900.00','$2,100',false)}
+        </div>
+      </div>
+      ${benefitTable(benefitRow('OFFICE VISIT - PROFESSIONAL','—','$30 / Visit(s)','Refer to: Health Benefit Plan Coverage'))}
+    </div>
+  </div>`;
+}
+
+function renderBCBSHMO() {
+  return `<div class="mock-screen">
+    ${planBar('Blue Cross Blue Shield of Texas','HMO')}
+    ${avTabs(['Patient Demographics','Policies','Care Provider','Deductibles & Maximums','Detailed Benefits'],'Care Provider')}
+    <div class="mock-body">
+      <div class="pcp-box">⚠ <strong>HMO PLAN — PCP Assignment Required</strong><br>PCP on File: <strong>Dr. R. Peterson</strong> | PCP Phone: 713-555-0199 | <span style="color:#c62828;font-weight:bold;">MyCHN is NOT listed as this patient's PCP</span></div>
+      ${benefitTable(benefitRow('Preventive Care / Annual Wellness Visit','—','$20 / Visit','Not Subject to Deductible'))}
+      <div class="ded-section" style="margin-top:10px;">
+        <div class="ded-grid">
+          ${dedBox('Annual Deductible — Individual','$1,500','','$800',false)}
+          ${dedBox('Out of Pocket Max — Individual','$5,000','','$4,200',false)}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderAmbetterSilver() {
+  return `<div class="mock-screen">
+    ${planBar('Ambetter Health','Standard Silver')}
+    ${avTabs(['Patient Demographics','Policies','Coordination of Benefits','Detailed Benefits'],'Detailed Benefits')}
+    <div class="mock-body">
+      <table class="benefit-table" style="margin-bottom:10px;">
+        <thead><tr><th>Information / Details</th><th>Co-Insurance</th><th>Co-Payment</th><th>Benefit Deductible</th><th>Limitations</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge-in">In Network</span><div style="color:#666;font-size:10px;margin-top:2px;">Coverage: Family | • PCP</div></td><td>—</td><td style="font-weight:600;color:#16a34a;">$0 / Visit(s)</td><td style="color:#003087;font-size:10px;">Refer to: Health Benefit Plan Coverage</td><td>—</td></tr>
+          <tr><td><span class="badge-in">In Network</span><div style="color:#666;font-size:10px;margin-top:2px;">Coverage: Family | • Mental Health</div></td><td>—</td><td style="font-weight:600;color:#16a34a;">$0 / Visit(s)</td><td style="color:#003087;font-size:10px;">Refer to: Health Benefit Plan Coverage</td><td>—</td></tr>
+        </tbody>
+      </table>
+      <div style="font-size:10px;color:#aaa;margin-bottom:5px;">▼ Health Benefit Plan Coverage — 30</div>
+      <div class="ded-section">
+        <div class="ded-grid">
+          <div class="ded-box">
+            <div class="ded-box-title">Annual Deductible — Individual, In-Network</div>
+            <div class="ded-row"><span class="ded-lbl">Limit:</span><span class="ded-val">$0 / Calendar Year(s)</span></div>
+            <div class="progress-bar"><div class="progress-fill green" style="width:100%"></div></div>
+            <div style="background:#dcfce7;color:#15803d;font-size:10px;padding:3px 6px;border-radius:3px;margin-top:4px;">⚠ This plan has NO deductible — deductible does not apply</div>
+          </div>
+          ${dedBox('Out of Pocket Maximum — Individual','$2,200 / Calendar Year(s)','$16.14','$2,183.86',false)}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderUHC() {
+  return `<div class="mock-screen">
+    <div class="uhc-plan-bar">
+      <div style="font-size:14px;font-weight:700;">UnitedHealthcare POS Choice Plus</div>
+      <div style="font-size:11px;margin-top:2px;opacity:0.9;">Member ID: 980176096 | Group: 922435 | Plan Type: Commercial</div>
+    </div>
+    <div class="uhc-status-bar">
+      <span style="color:#16a34a;font-weight:bold;">● Active (01/01/2026 – 12/31/2026)</span>
+      <span>Service Dates: 05/20/2026</span>
+    </div>
+    <div class="uhc-tabs">
+      <div class="uhc-tab">Patient Demographics</div><div class="uhc-tab">Policies</div><div class="uhc-tab">Coordination of Benefits</div>
+      <div class="uhc-tab active">Deductibles & Maximums</div><div class="uhc-tab">Coverage</div><div class="uhc-tab">Detailed Benefits</div>
+    </div>
+    <div style="background:#fff8e1;border-bottom:1px solid #f0d000;padding:5px 14px;font-size:11px;color:#555;">⚠ Refer to Detailed Benefits to verify plan coverage. Deductible information is on this tab.</div>
+    <div style="padding:12px 14px;">
+      <table style="width:100%;border-collapse:collapse;font-size:11px;margin-bottom:12px;">
+        <thead><tr style="background:#f5f5f5;"><th style="padding:5px 8px;text-align:left;border-bottom:2px solid #ddd;">Service</th><th style="padding:5px 8px;text-align:left;border-bottom:2px solid #ddd;">Deductible Info</th><th style="padding:5px 8px;text-align:left;border-bottom:2px solid #ddd;">Copay</th><th style="padding:5px 8px;text-align:left;border-bottom:2px solid #ddd;">Coinsurance</th><th style="padding:5px 8px;text-align:left;border-bottom:2px solid #ddd;">Status</th></tr></thead>
+        <tbody><tr><td style="padding:5px 8px;border-bottom:1px solid #eee;">Physician Visit</td><td style="padding:5px 8px;border-bottom:1px solid #eee;color:#dc2626;">Applies, Not Met</td><td style="padding:5px 8px;border-bottom:1px solid #eee;">$0.00 / Visit</td><td style="padding:5px 8px;border-bottom:1px solid #eee;">20% after deductible</td><td style="padding:5px 8px;border-bottom:1px solid #eee;color:#16a34a;font-weight:bold;">Active</td></tr></tbody>
+      </table>
+      <div class="uhc-ded-grid">
+        <div class="uhc-ded-box">
+          <div class="uhc-ded-title">Individual, In-Network</div>
+          <div style="font-size:10px;color:#666;margin-bottom:4px;">This member's individual deductible will be satisfied when their family deductible has been met.</div>
+          <div style="font-size:10px;color:#999;">Plan does not have an In-Network individual out-of-pocket maximum.</div>
+        </div>
+        <div class="uhc-ded-box">
+          <div class="uhc-ded-title">Family, In-Network</div>
+          <div style="font-size:11px;color:#666;margin-bottom:3px;">Plan Deductible Per Calendar Year</div>
+          <div style="font-size:13px;color:#dc2626;font-weight:bold;">$154.46 of $6,800.00 Met</div>
+          <div class="progress-bar"><div class="progress-fill uhc" style="width:2%"></div></div>
+          <div style="font-size:11px;color:#555;">Remaining: <strong style="color:#dc2626;">$6,645.54</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderCHIP() {
+  return `<div class="mock-screen" style="max-width:680px;">
+    <div class="chip-plan-bar">
+      <div style="font-size:13px;font-weight:600;">Member Eligibility — Community Health Choice</div>
+    </div>
+    <div class="chip-report-title">Member Eligibility Report</div>
+    <div class="chip-verified">This Eligibility Report is verified for Date of Service: May 20, 2026</div>
+    <div class="chip-grid">
+      <div class="chip-lbl">MEMBER NUMBER</div><div class="chip-val">617840947</div>
+      <div class="chip-lbl">INSURANCE</div><div class="chip-val blue">CHIP Policy Plan-110% to 150% FPL</div>
+      <div class="chip-lbl">PCP ASSIGNMENT</div><div class="chip-val">Nita Gandhi</div>
+      <div class="chip-lbl">ELIGIBILITY DATE</div><div class="chip-val blue">November 1, 2025</div>
+      <div class="chip-lbl">TERMINATION DATE</div><div class="chip-val">—</div>
+      <div class="chip-lbl">OTHER INSURANCE</div><div class="chip-val">N/A</div>
+    </div>
+    <div class="chip-copay-title">Copayments</div>
+    <div class="chip-copay-note">Member may have copay, coinsurance, or deductible. Please verify all three to determine member's responsibility.</div>
+    <table class="chip-table">
+      <thead><tr><th>CHIP Benefits</th><th>Copay</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Brand RX Copay</td><td>$5.00</td><td></td></tr>
+        <tr><td>ER Hospital Copay</td><td>$5.00</td><td></td></tr>
+        <tr><td>Generic RX Copay</td><td>$0.00</td><td></td></tr>
+        <tr><td>Inpatient Hospital Copay</td><td>$35.00</td><td></td></tr>
+        <tr><td>Office Visit Copay</td><td>$5.00</td><td></td></tr>
+        <tr><td>Specialist Copay</td><td>$5.00</td><td></td></tr>
+        <tr><td>Vision Copay</td><td>$5.00</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>`;
+}
+
+function renderMeritain() {
+  return `<div class="mock-screen">
+    ${planBar('Aetna Choice POS II','Administered by Meritain Health')}
+    ${avTabs(['Patient Demographics','Policies','Coordination of Benefits','Deductibles & Maximums','Detailed Benefits'],'Detailed Benefits')}
+    <div class="mock-body">
+      ${benefitTable(benefitRow('OFFICE VISIT','—','—','Refer to: Health Benefit Plan Coverage'))}
+      <div class="warning-box" style="margin-top:10px;">⚠ Meritain Note: Deductible information sometimes is NOT shown at the top of this screen. May need to scroll under benefit to reveal.</div>
+      <div style="border-top:2px dashed #ccc;margin:10px 0;"></div>
+      <div class="scroll-hint">▼ Health Benefit Plan Coverage — Scroll to find this section</div>
+      <div class="meritain-section">
+        <div style="font-size:11px;font-weight:bold;color:#003087;margin-bottom:8px;">Health Benefit Plan Coverage — 30</div>
+        <div class="ded-grid">
+          ${dedBox('Annual Deductible — Individual, In-Network','$3,500 / Calendar Year(s)','$3,500.00','$0.00',true)}
+          ${dedBox('Out of Pocket Maximum — Individual','$6,500 / Calendar Year(s)','','$3,200',false)}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderAmbetterGold() {
+  return `<div class="mock-screen"><div class="pdf-wrap">
+    <div class="pdf-title">Everyday Gold — Schedule of Benefits</div>
+    <div style="font-size:11px;margin-bottom:10px;color:#555;"><strong>Member:</strong> Brianna Castro &nbsp;|&nbsp; <strong>Coverage Level:</strong> Family</div>
+    <table class="pdf-table">
+      <thead><tr><th>Benefit</th><th>In-Network</th><th>Out-of-Network</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Annual Deductible per Calendar Year</strong></td><td>$800 Individual / $1,600 Family</td><td>Not applicable</td></tr>
+        <tr><td><strong>Out-of-Pocket Maximum per Calendar Year</strong></td><td>$7,250 Individual / $14,500 Family</td><td>Not applicable</td></tr>
+        <tr><td>Primary Care Office Visit</td><td>$35 Copay per visit</td><td>Not covered</td></tr>
+        <tr><td>Preventive Care</td><td>No charge</td><td>Not covered</td></tr>
+      </tbody>
+    </table>
+    <div class="oop-met-box">
+      <div style="font-weight:bold;color:#16a34a;font-size:12px;margin-bottom:6px;">ACCUMULATIONS — Out-of-Pocket Maximum</div>
+      <table style="width:100%;border-collapse:collapse;font-size:11px;">
+        <thead><tr><th style="text-align:left;padding:4px 8px;background:#16a34a;color:white;">Level</th><th style="padding:4px 8px;background:#16a34a;color:white;">Limit</th><th style="padding:4px 8px;background:#16a34a;color:white;">Met to Date</th><th style="padding:4px 8px;background:#16a34a;color:white;">Remaining</th></tr></thead>
+        <tbody>
+          <tr><td style="padding:5px 8px;border-bottom:1px solid #ddd;font-weight:bold;">Family OOP</td><td style="padding:5px 8px;border-bottom:1px solid #ddd;">$14,500</td><td style="padding:5px 8px;border-bottom:1px solid #ddd;">$14,500</td><td style="padding:5px 8px;border-bottom:1px solid #ddd;font-weight:bold;color:#16a34a;">$0.00 ✓ MET</td></tr>
+          <tr><td style="padding:5px 8px;">Individual OOP</td><td style="padding:5px 8px;">$7,250</td><td style="padding:5px 8px;">$3,970</td><td style="padding:5px 8px;color:#dc2626;">$3,280 Remaining</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div></div>`;
+}
+
+function renderSBMA() {
+  return `<div class="mock-screen"><div class="pdf-wrap">
+    <div class="pdf-title">Verification of Benefits</div>
+    <p style="font-size:10px;color:#666;font-style:italic;margin-bottom:10px;">DISCLAIMER: Verification of Benefits is not a guarantee of payment.</p>
+    <div class="pdf-org-grid">
+      <div><strong>The Newtron Group</strong> &nbsp; 6305 &nbsp; (6305MEDCPR)</div>
+      <div><strong>Coverage Period:</strong> 03/01/2025 – 12/31/2025</div>
+      <div><strong>Patient:</strong> Carlos Rivera &nbsp;|&nbsp; DOB: 10/16/1982</div>
+      <div><strong>Status:</strong> <span style="color:#16a34a;font-weight:bold;">Active</span></div>
+    </div>
+    <table class="pdf-table">
+      <thead><tr><th>Benefit Description</th><th>In-Network</th><th>Out-of-Network</th></tr></thead>
+      <tbody>
+        <tr><td>Deductible per Person per CY</td><td>$6,000</td><td>$6,000</td></tr>
+        <tr><td>Out of Pocket per Person per CY</td><td>$6,900</td><td>$13,350</td></tr>
+        <tr style="background:#fff8e1;"><td><strong>Copay Physician Office Visit</strong></td><td><strong>N/A</strong></td><td>N/A</td></tr>
+        <tr><td>Office Visits</td><td>80% after deductible</td><td>60% after deductible</td></tr>
+      </tbody>
+    </table>
+    <div class="ded-status-box"><strong>Deductible Status:</strong> Individual: $6,000 &nbsp;|&nbsp; Met: $0.00 &nbsp;|&nbsp; <span style="color:#dc2626;font-weight:bold;">Remaining: $6,000 — NOT MET</span></div>
+  </div></div>`;
+}
+
+function renderSBMANotCovered() {
+  return `<div class="mock-screen"><div class="pdf-wrap">
+    <div class="pdf-title">Medical Plan Highlights — RBP Plan</div>
+    <div style="font-size:12px;margin-bottom:10px;"><strong>Patient:</strong> Aaliyah Johnson &nbsp;|&nbsp; <strong>Plan:</strong> RBP Plan &nbsp;|&nbsp; <strong>Status:</strong> Active</div>
+    <div style="background:#dc2626;color:white;text-align:center;padding:5px;font-size:11px;margin-bottom:10px;">Required Prior Authorization Review — Contact 844.955.0232</div>
+    <table class="pdf-table">
+      <thead><tr><th>Service</th><th>MEC Plan</th><th>RBP Plan</th><th>PPO Plan</th></tr></thead>
+      <tbody>
+        <tr><td>Inpatient/Outpatient Facility</td><td class="not-covered">Not Covered</td><td class="covered-green">Covered @ 100% after Deductible</td><td class="covered-green">Covered @ 95% after Deductible</td></tr>
+        <tr><td>Emergency Room</td><td class="not-covered">Not Covered</td><td class="covered-green">Covered @ 100% / $200 Copay</td><td class="covered-green">Covered @ 100% / $200 Copay</td></tr>
+        <tr style="background:#fdeaea;"><td><strong>Mental Health &amp; Substance Abuse</strong></td><td class="not-covered">Not Covered</td><td class="not-covered"><strong>NOT COVERED</strong></td><td class="not-covered">Not Covered</td></tr>
+        <tr><td>All Other Covered Medical Services</td><td class="not-covered">Not Covered</td><td class="covered-green">Covered @ 100% after Deductible</td><td class="covered-green">Covered @ 95% after Deductible</td></tr>
+      </tbody>
+    </table>
+  </div></div>`;
+}
+
+function renderOscar() {
+  return `<div class="mock-screen">
+    <div class="oscar-plan-bar">
+      <div style="font-size:14px;font-weight:700;">Oscar Bronze Elite + PCP Saver Plus</div>
+      <div style="font-size:11px;opacity:0.9;margin-top:2px;">Active May 1, 2026 – Dec 31, 2026</div>
+    </div>
+    <div class="oscar-body">
+      <div class="oscar-sidebar">
+        <div class="oscar-sidebar-lbl">Member ID</div>
+        <div class="oscar-sidebar-val">OSC100168-01</div>
+        <div class="oscar-sidebar-lbl">Current Deductible</div>
+        <div class="oscar-sidebar-val" style="color:#16a34a;">This plan has no deductible</div>
+        <div class="oscar-sidebar-lbl">Out-of-Pocket Max</div>
+        <div class="oscar-sidebar-val">$875 used / $10,500 remaining</div>
+      </div>
+      <div class="oscar-main">
+        <div style="font-size:11px;font-weight:bold;color:#333;margin-bottom:8px;">General Benefit Overview</div>
+        <table class="oscar-table">
+          <thead><tr><th>Service</th><th>Pre-deductible / Post-deductible</th></tr></thead>
+          <tbody>
+            <tr><td>Primary Care</td><td>$40 / $40</td></tr>
+            <tr><td>Specialist</td><td>$130 / $130</td></tr>
+            <tr><td>Urgent Care</td><td>$75 / $75</td></tr>
+            <tr><td>Emergency Room</td><td>$0 / $0</td></tr>
+            <tr><td><strong>Preventive Care / Annual Wellness</strong></td><td style="color:#16a34a;font-weight:bold;">$0 / $0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>`;
+}
+</script>
+</body>
+</html>
